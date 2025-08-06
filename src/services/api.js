@@ -17,13 +17,12 @@ const apiClient = axios.create({
 // ======================
 // REQUEST INTERCEPTOR
 // ======================
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`; // Must be exactly this format
+  }
+  return config;
   },
   (error) => {
     return Promise.reject(error);

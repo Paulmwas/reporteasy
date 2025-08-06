@@ -10,37 +10,37 @@ const Sidebar = () => {
     },
     {
       name: 'Reports',
-      path: '/dashboard/reports',
+      path: '/reports',
       icon: 'fas fa-file-alt'
     },
     {
       name: 'Analytics',
-      path: '/dashboard/analytics',
+      path: '/analytics',
       icon: 'fas fa-chart-line'
     },
     {
       name: 'Users',
-      path: '/dashboard/users',
+      path: '/users',
       icon: 'fas fa-users'
     },
     {
       name: 'Categories',
-      path: '/dashboard/categories',
+      path: '/categories',
       icon: 'fas fa-tags'
     },
     {
       name: 'Leaderboard',
-      path: '/dashboard/leaderboard',
+      path: '/leaderboard',
       icon: 'fas fa-trophy'
     },
     {
       name: 'Notifications',
-      path: '/dashboard/notifications',
+      path: '/notifications',
       icon: 'fas fa-bell'
     },
     {
       name: 'Settings',
-      path: '/dashboard/settings',
+      path: '/settings',
       icon: 'fas fa-cog'
     }
   ];
