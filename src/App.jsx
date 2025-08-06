@@ -1,25 +1,35 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './Components/ProtectedRoute';
+import NavBar from './Components/NavBar';
 import LandingPage from './Pages/LandingPage';
-// Import other pages when you create them
-// import Dashboard from './Pages/Dashboard';
-// import NotFound from './Pages/NotFound';
+import LoginPage from './Pages/LoginPage';
+import AdminDashboard from './Pages/AdminDashboard';
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <AuthProvider>
+        <NavBar />
         <Routes>
-          {/* Landing Page Route */}
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
           
-          {/* Dashboard Route (uncomment when ready) */}
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+          {/* Protected Admin Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<AdminDashboard />} />
+            
+            {/* Add other protected routes here */}
+            {/* <Route path="/dashboard/reports" element={<ReportsPage />} /> */}
+            {/* <Route path="/dashboard/analytics" element={<AnalyticsPage />} /> */}
+          </Route>
           
-          {/* Redirect any unknown routes to landing page */}
+          {/* 404 Handling */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </div>
+      </AuthProvider>
     </Router>
   );
 }

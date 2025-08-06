@@ -3,14 +3,14 @@ import DotGrid from './DotGrid';
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#e6ffda] via-white to-[#e6ffda]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#2e332e] via-[#7c877a] to-[#4c564b]">
       {/* DotGrid Background */}
       <div className="absolute inset-0 w-full h-full">
         <DotGrid
-          dotSize={8}
-          gap={20}
-          baseColor="#43cd66"
-          activeColor="#25d366"
+          dotSize={4}
+          gap={40}
+          baseColor="#000"
+          activeColor="#f0f0f0"
           proximity={100}
           shockRadius={200}
           shockStrength={4}
@@ -29,13 +29,13 @@ const HeroSection = () => {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#111b21] mb-6 leading-tight" style={{ fontFamily: 'Segoe UI, sans-serif' }}>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl text-white/90 font-bold  mb-6 leading-tight" style={{ fontFamily: 'Segoe UI, sans-serif' }}>
             Report Issues
             <span className="block text-[#25d366]">Instantly</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-[#5e5e5e] mb-12 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: 'Helvetica Neue, sans-serif' }}>
+          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: 'Helvetica Neue, sans-serif' }}>
             Transform how your community reports infrastructure issues. Send text, images, or voice messages via WhatsApp and get real-time updates on resolution progress.
           </p>
 
