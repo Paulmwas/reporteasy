@@ -1,13 +1,13 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import NavBar from './components/NavBar';
-import LoadingSpinner from './components/LoadingSpinner';
+import ProtectedRoute from './Components/ProtectedRoute';
+import NavBar from './Components/NavBar';
+import LoadingSpinner from './Components/LoadingSpinner';
 
 // Lazy load pages
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
+const LandingPage = lazy(() => import('./Pages/LandingPage'));
+const LoginPage = lazy(() => import('./Pages/LoginPage'));
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 const DashboardHome = lazy(() => import('./Pages/AdminDashboard'));
 const ReportsPage = lazy(() => import('./Pages/Reports'));
