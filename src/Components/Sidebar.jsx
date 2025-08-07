@@ -19,9 +19,9 @@ const Sidebar = () => {
       icon: 'fas fa-chart-line'
     },
     {
-      name: 'Users',
-      path: '/users',
-      icon: 'fas fa-users'
+      name: 'Hotspots',
+      path: '/hotspots',
+      icon: 'fas fa-location-dot'
     },
     {
       name: 'Categories',
