@@ -1,6 +1,20 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
+    // {
+    //   name: 'Categories',
+    //   path: '/categories',
+    //   icon: 'fas fa-tags'
+    // }, 
+    //    {
+    //   name: 'Notifications',
+    //   path: '/notifications',
+    //   icon: 'fas fa-bell'
+    // },
+    // {
+    //   name: 'Settings',
+    //   path: '/settings',
+    //   icon: 'fas fa-cog'
+    // }
 const Sidebar = () => {
   const navItems = [
     {
@@ -23,26 +37,13 @@ const Sidebar = () => {
       path: '/hotspots',
       icon: 'fas fa-location-dot'
     },
-    {
-      name: 'Categories',
-      path: '/categories',
-      icon: 'fas fa-tags'
-    },
+
     {
       name: 'Leaderboard',
       path: '/leaderboard',
       icon: 'fas fa-trophy'
     },
-    {
-      name: 'Notifications',
-      path: '/notifications',
-      icon: 'fas fa-bell'
-    },
-    {
-      name: 'Settings',
-      path: '/settings',
-      icon: 'fas fa-cog'
-    }
+
   ];
 
   return (
