@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 const Reports = () => {
@@ -22,40 +22,101 @@ const Reports = () => {
     offset: 0
   });
 
-  // Fetch reports with current filters
-  const fetchReports = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Fetch reports with current filters - using useCallback to fix ESLint warning
+// Update the fetchReports function in your Reports component
+const fetchReports = useCallback(async () => {
+  try {
+    setLoading(true);
+    setError(null);
 
-      const queryParams = {
-        limit: pagination.limit,
-        offset: pagination.offset,
-        ...Object.fromEntries(
-          Object.entries(filters).filter(([_, value]) => value !== '')
-        )
-      };
+    const queryParams = {
+      limit: pagination.limit,
+      offset: pagination.offset,
+      ...Object.fromEntries(
+        Object.entries(filters).filter(([, value]) => value !== '')
+      )
+    };
 
-      const response = await api.reports.list(queryParams);
-      setReports(response.reports || []);
-      setPagination(prev => ({
-        ...prev,
-        total: response.total || 0
-      }));
-    } catch (err) {
-      console.error('Error fetching reports:', err);
-      setError(err.message || 'Failed to load reports');
-    } finally {
-      setLoading(false);
+    console.log('🔍 Fetching reports with params:', queryParams);
+    
+    const response = await api.reports.list(queryParams);
+    
+    console.log('✅ Raw API Response:', response);
+    console.log('📊 Response type:', typeof response);
+    console.log('📊 Is Array:', Array.isArray(response));
+    
+    // Handle different response structures
+    let reportsData = [];
+    let totalCount = 0;
+    
+    if (Array.isArray(response)) {
+      // API returns array directly
+      reportsData = response;
+      totalCount = response.length;
+      console.log('📋 Using direct array response');
+    } else if (response && response.reports) {
+      // API returns object with reports property
+      reportsData = response.reports;
+      totalCount = response.total || response.reports.length;
+      console.log('📋 Using wrapped response');
+    } else if (response && response.data) {
+      // API returns nested data
+      if (Array.isArray(response.data)) {
+        reportsData = response.data;
+        totalCount = response.total || response.data.length;
+      } else if (response.data.reports) {
+        reportsData = response.data.reports;
+        totalCount = response.data.total || response.data.reports.length;
+      }
+      console.log('📋 Using nested data response');
     }
-  };
+    
+    console.log('📊 Final Reports Data:', reportsData);
+    console.log('📈 Final Total Count:', totalCount);
+    
+    setReports(reportsData);
+    setPagination(prev => ({
+      ...prev,
+      total: totalCount
+    }));
+    
+    // Additional logging for debugging
+    if (reportsData && reportsData.length > 0) {
+      console.log('📝 First Report Sample:', reportsData[0]);
+      console.log('🏷️ Report Categories:', [...new Set(reportsData.map(r => r.category))]);
+      console.log('📊 Report Statuses:', [...new Set(reportsData.map(r => r.status))]);
+    } else {
+      console.warn('⚠️ No reports found after processing');
+    }
 
+  } catch (err) {
+    console.error('❌ Error fetching reports:', err);
+    console.error('🔍 Error Details:', {
+      message: err.message,
+      status: err.status,
+      response: err.response,
+      stack: err.stack
+    });
+    
+    setError(err.message || 'Failed to load reports');
+  } finally {
+    setLoading(false);
+  }
+}, [filters, pagination.limit, pagination.offset]);
   // Update report status
   const updateReportStatus = async (reportId, newStatus) => {
     try {
       setUpdatingStatus(true);
       
+      console.log('🔄 Updating report status:', {
+        reportId,
+        newStatus,
+        notes: statusNotes
+      });
+      
       const response = await api.reports.updateStatus(reportId, newStatus, statusNotes);
+      
+      console.log('✅ Status Update Response:', response);
       
       // Update the report in the local state
       setReports(prevReports => 
@@ -70,10 +131,9 @@ const Reports = () => {
       setSelectedReport(null);
       setStatusNotes('');
       
-      // Show success notification (you can implement toast notifications here)
-      console.log('Status updated successfully:', response);
+      console.log('✅ Status updated successfully:', response);
     } catch (err) {
-      console.error('Error updating status:', err);
+      console.error('❌ Error updating status:', err);
       setError('Failed to update report status');
     } finally {
       setUpdatingStatus(false);
@@ -81,8 +141,9 @@ const Reports = () => {
   };
 
   useEffect(() => {
+    console.log('🚀 Component mounted or dependencies changed');
     fetchReports();
-  }, [filters, pagination.offset]);
+  }, [fetchReports]);
 
   // Helper functions
   const getStatusColor = (status) => {
@@ -133,10 +194,70 @@ const Reports = () => {
     return status !== 'resolved';
   };
 
+  // Debug function to test API directly
+  const testAPIConnection = async () => {
+    try {
+      console.log('🧪 Testing API Connection...');
+      
+      // Check if we have a token
+      const token = localStorage.getItem('token');
+      console.log('🔑 Current Token:', token ? `${token.substring(0, 20)}...` : 'No token found');
+      
+      if (!token) {
+        console.log('🔐 No token found, attempting login...');
+        try {
+          const loginResponse = await api.auth.login({
+            email: 'movineee@gmail.com',
+            password: 'ocholamo1'
+          });
+          console.log('✅ Login successful:', loginResponse);
+          console.log('🔑 New Token stored:', localStorage.getItem('token') ? 'Yes' : 'No');
+        } catch (loginErr) {
+          console.error('❌ Login failed:', loginErr);
+          return;
+        }
+      }
+      
+      // Test dashboard endpoint first (doesn't require auth)
+      console.log('📊 Testing Dashboard endpoint...');
+      const dashboardResponse = await api.dashboard.getOverview();
+      console.log('✅ Dashboard Response:', dashboardResponse);
+      
+      // Test reports endpoint with minimal params
+      console.log('📋 Testing Reports endpoint...');
+      const reportsResponse = await api.reports.list({ limit: 5, offset: 0 });
+      console.log('✅ Reports Response:', reportsResponse);
+      
+      // If we got here, everything works - refresh the main data
+      console.log('🎉 API test successful, refreshing main data...');
+      fetchReports();
+      
+    } catch (err) {
+      console.error('❌ API Test Failed:', err);
+      console.error('📋 Full Error Object:', {
+        message: err.message,
+        status: err.status,
+        response: err.response,
+        details: err.details
+      });
+    }
+  };
+
   if (loading && reports.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0B1120] via-[#1A1A2E] to-[#16213E] p-6">
         <div className="max-w-7xl mx-auto">
+          {/* Debug Panel */}
+          <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+            <button 
+              onClick={testAPIConnection}
+              className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-all"
+            >
+              🧪 Test API Connection
+            </button>
+            <p className="text-blue-300 text-sm mt-2">Check browser console for detailed logs</p>
+          </div>
+          
           {/* Loading skeleton */}
           <div className="animate-pulse">
             <div className="h-8 bg-gray-600/30 rounded w-48 mb-8"></div>
@@ -185,14 +306,22 @@ const Reports = () => {
                 </p>
               </div>
               
-              <button 
-                onClick={() => fetchReports()}
-                disabled={loading}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#C1FF72] to-[#00D4B2] text-[#1A1A2E] rounded-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50"
-              >
-                <i className={`fas fa-sync-alt mr-2 ${loading ? 'animate-spin' : ''}`}></i>
-                Refresh
-              </button>
+              <div className="flex gap-3">
+                <button 
+                  onClick={testAPIConnection}
+                  className="inline-flex items-center px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl hover:bg-blue-500/30 transition-all duration-300"
+                >
+                  🧪 Test API
+                </button>
+                <button 
+                  onClick={() => fetchReports()}
+                  disabled={loading}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#C1FF72] to-[#00D4B2] text-[#1A1A2E] rounded-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50"
+                >
+                  <i className={`fas fa-sync-alt mr-2 ${loading ? 'animate-spin' : ''}`}></i>
+                  Refresh
+                </button>
+              </div>
             </div>
 
             {/* Filters */}
@@ -268,6 +397,19 @@ const Reports = () => {
               </div>
             </div>
           )}
+
+          {/* Debug Info Panel */}
+          <div className="mb-6 bg-gray-900/20 border border-gray-500/30 rounded-2xl p-4">
+            <h3 className="text-gray-300 text-sm font-semibold mb-2">Debug Information:</h3>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-xs text-gray-400">
+              <div>Reports Loaded: <span className="text-white">{reports.length}</span></div>
+              <div>Total Available: <span className="text-white">{pagination.total}</span></div>
+              <div>Loading: <span className="text-white">{loading ? 'Yes' : 'No'}</span></div>
+              <div>Error: <span className="text-white">{error ? 'Yes' : 'No'}</span></div>
+              <div>Token: <span className="text-white">{localStorage.getItem('token') ? 'Present' : 'Missing'}</span></div>
+              <div>API Status: <span className="text-green-400">Ready</span></div>
+            </div>
+          </div>
 
           {/* Reports List */}
           <div className="space-y-4">
@@ -409,6 +551,12 @@ const Reports = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-300 mb-2">No Reports Found</h3>
               <p className="text-gray-500">Try adjusting your filters or check back later.</p>
+              <button 
+                onClick={testAPIConnection}
+                className="mt-4 px-6 py-3 bg-blue-500/20 text-blue-300 rounded-xl hover:bg-blue-500/30 transition-all"
+              >
+                🧪 Test API Connection
+              </button>
             </div>
           )}
         </div>
