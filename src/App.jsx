@@ -16,13 +16,15 @@ const ReportsPage = lazy(() => import('./Pages/Reports'));
 const AnalyticsPage = lazy(() => import('./Pages/Analytics'));
 const UsersPage = lazy(() => import('./Pages/Hotspots'));
 const LeaderboardPage = lazy(() => import('./Pages/Leaderboard'));
+const ApproveSolutions = lazy(() => import('./Pages/ApproveSolutions'));
 
 // Community Dashboard Components (to be created)
 const CommunityDashboardLayout = lazy(() => import('./layouts/CommunityDashboardLayout'));
 const CommunityHome = lazy(() => import('./Pages/Community/CommunityHome'));
-const CommunityReports = lazy(() => import('./Pages/Community/CommunitySolutions'));
-// const MySolutions = lazy(() => import('./Pages/Community/MySolutions'));
-// const CommunityProviders = lazy(() => import('./Pages/Community/CommunityProviders'));
+const CommunitySolutions = lazy(() => import('./Pages/Community/CommunitySolutions'));
+const Solutions = lazy(() => import('./Pages/Community/Solutions'));
+const CommunityLeaderboards = lazy(() => import('./Pages/Community/CommunityLeaderboards'));
+const CommunityChat = lazy(() => import('./Pages/Community/CommunityChat'));
 // const SolutionMarketplace = lazy(() => import('./Pages/Community/SolutionMarketplace'));
 // const CommunityProfile = lazy(() => import('./Pages/Community/CommunityProfile'));
 
@@ -44,16 +46,18 @@ function App() {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/hotspots" element={<UsersPage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/approve-solutions" element={<ApproveSolutions />} />
               </Route>
             </Route>
 
             {/* Community Dashboard Routes - Public Access */}
             <Route element={<CommunityDashboardLayout />}>
               <Route path="/community" element={<CommunityHome />} />
-              <Route path="/community/reports" element={<CommunityReports />} />
-              {/* <Route path="/community/solutions" element={<MySolutions />} />
-              <Route path="/community/providers" element={<CommunityProviders />} />
-              <Route path="/community/marketplace" element={<SolutionMarketplace />} />
+              <Route path="/community/reports" element={<CommunitySolutions />} />
+              <Route path="/community/solutions" element={<Solutions />} />
+              <Route path="/community/leaderboards" element={<CommunityLeaderboards />} />
+              <Route path="/community/chat" element={<CommunityChat />} />
+              {/* <Route path="/community/marketplace" element={<SolutionMarketplace />} />
               <Route path="/community/profile" element={<CommunityProfile />} /> */}
             </Route>
             

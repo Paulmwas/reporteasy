@@ -1,6 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
+    // {
+    //   name: 'My Impact',
+    //   path: '/community/impact',
+    //   icon: 'fas fa-chart-pie'
+    // },
 const CommunitySidebar = () => {
   const navItems = [
     {
@@ -23,14 +27,10 @@ const CommunitySidebar = () => {
       path: '/community/solutions',
       icon: 'fas fa-lightbulb'
     },
-    {
-      name: 'My Impact',
-      path: '/community/impact',
-      icon: 'fas fa-chart-pie'
-    },
+
     {
       name: 'Leaderboard',
-      path: '/community/leaderboard',
+      path: '/community/leaderboards',
       icon: 'fas fa-trophy'
     },
     {

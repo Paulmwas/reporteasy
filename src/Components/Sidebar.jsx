@@ -43,6 +43,11 @@ const Sidebar = () => {
       path: '/leaderboard',
       icon: 'fas fa-trophy'
     },
+        {
+      name: 'Approve Solutions',
+      path: '/approve-solutions',
+      icon: 'fas fa-check-circle'
+    },
 
   ];
 
