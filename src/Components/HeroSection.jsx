@@ -43,7 +43,7 @@ const HeroSection = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
             <button className="bg-[#25d366] hover:bg-[#43cd66] text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2">
               <i className="fas fa-whatsapp"></i>
-              <span>Start Reporting</span>
+              <span><a href="/community">Start Reporting</a></span>
             </button>
             <button className="bg-white/90 backdrop-blur-sm hover:bg-white text-[#111b21] px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 border border-[#43cd66]/20 hover:border-[#43cd66]/40 flex items-center space-x-2">
               <i className="fas fa-play"></i>

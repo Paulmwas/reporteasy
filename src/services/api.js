@@ -187,6 +187,109 @@ const api = {
   },
 
   // ======================
+  // COMMUNITY SOLUTIONS
+  // ======================
+  solutions: {
+    // Submit a solution proposal for a report
+    submitSolution: async (reportId, solutionData) => {
+      try {
+        const response = await apiClient.post(`/solutions/reports/${reportId}/solutions`, {
+          providerId: solutionData.providerId,
+          solutionType: solutionData.solutionType || 'volunteer', // volunteer, paid, expert
+          description: solutionData.description,
+          estimatedCost: solutionData.estimatedCost || null,
+          estimatedTime: solutionData.estimatedTime,
+          expertise: solutionData.expertise,
+          paymentOffered: solutionData.paymentOffered || null,
+        });
+        return response;
+      } catch (error) {
+        console.error('Submit Solution Error:', error.message);
+        throw error;
+      }
+    },
+
+    // Get all solutions for a specific report
+    getReportSolutions: async (reportId) => {
+      try {
+        return await apiClient.get(`/solutions/reports/${reportId}/solutions`);
+      } catch (error) {
+        console.error('Get Report Solutions Error:', error.message);
+        throw error;
+      }
+    },
+
+    // Accept a solution proposal (Admin only)
+    acceptSolution: async (solutionId, paymentOffered = null) => {
+      try {
+        const payload = {};
+        if (paymentOffered) {
+          payload.paymentOffered = paymentOffered;
+        }
+        return await apiClient.post(`/solutions/${solutionId}/accept`, payload);
+      } catch (error) {
+        console.error('Accept Solution Error:', error.message);
+        throw error;
+      }
+    },
+
+    // Complete a solution and provide rating (Admin only)
+    completeSolution: async (solutionId, rating) => {
+      try {
+        return await apiClient.post(`/solutions/${solutionId}/complete`, {
+          rating: rating, // 1-5 stars
+        });
+      } catch (error) {
+        console.error('Complete Solution Error:', error.message);
+        throw error;
+      }
+    },
+
+    // Get top community providers
+    getTopProviders: async (limit = 10) => {
+      try {
+        return await apiClient.get('/solutions/providers/top', {
+          params: { limit }
+        });
+      } catch (error) {
+        console.error('Get Top Providers Error:', error.message);
+        throw error;
+      }
+    },
+
+    // Register as a community provider
+    registerProvider: async (providerData) => {
+      try {
+        return await apiClient.post('/solutions/providers/register', {
+          phoneNumber: providerData.phoneNumber,
+          name: providerData.name,
+          expertise: providerData.expertise, // Array of skills
+        });
+      } catch (error) {
+        console.error('Register Provider Error:', error.message);
+        // Handle the 404 error from your API (endpoint might not be implemented yet)
+        if (error.status === 404) {
+          throw {
+            ...error,
+            message: 'Provider registration endpoint is not available yet. Please contact admin.',
+          };
+        }
+        throw error;
+      }
+    },
+
+    // Get detailed solutions for a report (Admin view)
+    getReportSolutionsAdmin: async (reportId) => {
+      try {
+        return await apiClient.get(`/solutions/report/${reportId}`);
+      } catch (error) {
+        console.error('Get Report Solutions Admin Error:', error.message);
+        throw error;
+      }
+    },
+  },
+
+  // ======================
   // INTEGRATIONS
   // ======================
   integrations: {
@@ -225,6 +328,42 @@ export const buildReportFilters = (filters = {}) => {
   };
 };
 
+// Solution-specific utility functions
+export const buildSolutionPayload = (solutionData) => {
+  const requiredFields = ['providerId', 'description', 'estimatedTime', 'expertise'];
+  const missingFields = requiredFields.filter(field => !solutionData[field]);
+  
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+
+  return {
+    providerId: solutionData.providerId,
+    solutionType: solutionData.solutionType || 'volunteer',
+    description: solutionData.description.trim(),
+    estimatedCost: solutionData.solutionType === 'paid' ? solutionData.estimatedCost : null,
+    estimatedTime: solutionData.estimatedTime.trim(),
+    expertise: solutionData.expertise.trim(),
+    paymentOffered: solutionData.paymentOffered || null,
+  };
+};
+
+export const validateRating = (rating) => {
+  const numRating = parseInt(rating);
+  if (isNaN(numRating) || numRating < 1 || numRating > 5) {
+    throw new Error('Rating must be a number between 1 and 5');
+  }
+  return numRating;
+};
+
+export const validatePhoneNumber = (phoneNumber) => {
+  const kenyanPhoneRegex = /^\+254[17]\d{8}$/;
+  if (!kenyanPhoneRegex.test(phoneNumber)) {
+    throw new Error('Invalid Kenyan phone number format. Use +254XXXXXXXXX');
+  }
+  return phoneNumber;
+};
+
 export const isAuthError = (error) => {
   return error?.status === 401;
 };
@@ -235,6 +374,30 @@ export const isNetworkError = (error) => {
 
 export const isRateLimitError = (error) => {
   return error?.status === 429;
+};
+
+export const isSolutionError = (error) => {
+  return error?.code && error.code.includes('SOLUTION');
+};
+
+export const getSolutionStatusColor = (status) => {
+  const statusColors = {
+    pending: 'yellow',
+    accepted: 'blue',
+    in_progress: 'orange',
+    completed: 'green',
+    rejected: 'red',
+  };
+  return statusColors[status] || 'gray';
+};
+
+export const getSolutionTypeIcon = (type) => {
+  const typeIcons = {
+    volunteer: '🤝',
+    paid: '💰',
+    expert: '👨‍🔬',
+  };
+  return typeIcons[type] || '❓';
 };
 
 export default api;
