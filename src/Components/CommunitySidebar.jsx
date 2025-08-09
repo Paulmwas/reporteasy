@@ -13,7 +13,7 @@ const CommunitySidebar = () => {
       icon: 'fas fa-home'
     },
     {
-      name: 'Report Issue',
+      name: 'View Issue',
       path: '/community/reports',
       icon: 'fas fa-plus-circle'
     },
